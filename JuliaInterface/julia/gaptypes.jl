@@ -10,7 +10,7 @@
 
 module GAPUtils
 
-doc"""
+"""
     get_function_symbols_in_module(module_t::Module) :: Array{Symbol,1}
 
 > Returns all function symbols in the module `module_t`.
@@ -23,7 +23,7 @@ function get_function_symbols_in_module(module_t)
     return list
 end
 
-doc"""
+"""
     get_variable_symbols_in_module(module_t::Module) :: Array{Symbol,1}
 
 > Returns all variable symbols in the module `module_t`, i.e.,
@@ -37,7 +37,7 @@ function get_variable_symbols_in_module(module_t)
     return list
 end
 
-doc"""
+"""
     call_with_catch( juliafunc, arguments )
 
 > Returns a tuple `( ok, val )`
@@ -72,37 +72,37 @@ gap_funcs = Array{Any,1}();
 
 ## currently unused
 gap_object_finalizer = function(obj)
-    ccall(Main.gap_unpin_gap_obj,Void,(Cint,),obj.index)
+    ccall(Main.gap_unpin_gap_obj,Cvoid,(Cint,),obj.index)
 end
 
-doc"""
+"""
     GapObj
 
 > Holds a pointer to an object in the GAP CAS, and additionally some internal information for
 > GAP's garbage collection. It can be used as arguments for GapFunc's.
 """
 mutable struct GapObj
-    ptr::Ptr{Void}
+    ptr::Ptr{Cvoid}
     index
-    function GapObj(ptr::Ptr{Void})
-        index = ccall(Main.gap_pin_gap_obj,Cint,(Ptr{Void},),ptr)
+    function GapObj(ptr::Ptr{Cvoid})
+        index = ccall(Main.gap_pin_gap_obj,Cint,(Ptr{Cvoid},),ptr)
         new_obj = new(ptr,index)
-        finalizer(new_obj,gap_object_finalizer)
+        finalizer(gap_object_finalizer,new_obj)
         return new_obj
     end
 end
 
-doc"""
+"""
     GapFunc
 
 > Holds a pointer to a function in the GAP CAS.
 > Such functions can be called on GapObj's.
 """
 struct GapFunc
-    ptr::Ptr{Void}
+    ptr::Ptr{Cvoid}
 end
 
-doc"""
+"""
     (func::GapFunc)(args...)
 
 > This function makes it possible to call GapFunc objects on
@@ -115,10 +115,10 @@ function(func::GapFunc)(args...)
     arg_array = collect(args)
     arg_array = map(i->i.ptr,arg_array)
     length_array = length(arg_array)
-    gap_arg_list = GapObj(ccall(Main.gap_MakeGapArgList,Ptr{Void},
-                                (Cint,Ptr{Ptr{Void}}),length_array,arg_array))
-    return GapObj(ccall(Main.gap_CallFuncList,Ptr{Void},
-                        (Ptr{Void},Ptr{Void}),func.ptr,gap_arg_list.ptr))
+    gap_arg_list = GapObj(ccall(Main.gap_MakeGapArgList,Ptr{Cvoid},
+                                (Cint,Ptr{Ptr{Cvoid}}),length_array,arg_array))
+    return GapObj(ccall(Main.gap_CallFuncList,Ptr{Cvoid},
+                        (Ptr{Cvoid},Ptr{Cvoid}),func.ptr,gap_arg_list.ptr))
 end
 
 ## Internal function, not to be used.
@@ -136,4 +136,7 @@ function prepare_func_for_gap(gap_func)
     return return_func
 end
 
+end
+
+baremodule GAPFuncs
 end

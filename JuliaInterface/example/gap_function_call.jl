@@ -9,5 +9,5 @@ function Power2(a)
     # is automatic
     number = number*4 + 1
     # can be done automatic
-    return GAP.GapObj( Ptr{Void}( number ) )
+    return GAP.GapObj( Ptr{Cvoid}( number ) )
 end

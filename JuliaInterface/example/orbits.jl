@@ -1,13 +1,13 @@
 function gap_LengthPlist(list)
-    return ccall(gap_LengthList,Int64,(Ptr{Void},),list.ptr)
+    return ccall(gap_LengthList,Int64,(Ptr{Cvoid},),list.ptr)
 end
 
 function gap_ListElement(list,pos::Int)
-    return GAP.GapObj(ccall(gap_Elm0_List,Ptr{Void},(Ptr{Void},Int),list.ptr,pos))
+    return GAP.GapObj(ccall(gap_Elm0_List,Ptr{Cvoid},(Ptr{Cvoid},Int),list.ptr,pos))
 end
 
 function gap_CallFunc2Args(func,arg1,arg2)
-    return GAP.GapObj(ccall( gap_Call2Args, Ptr{Void}, (Ptr{Void},Ptr{Void},Ptr{Void}), func.ptr,arg1.ptr,arg2.ptr ))
+    return GAP.GapObj(ccall( gap_Call2Args, Ptr{Cvoid}, (Ptr{Cvoid},Ptr{Cvoid},Ptr{Cvoid}), func.ptr,arg1.ptr,arg2.ptr ))
 end
 
 function bahn( element, generators, action )
@@ -32,12 +32,12 @@ function bahn( element, generators, action )
             end
         end
     end
-    pointer = ccall(gap_NewJuliaObj,Ptr{Void},(Ptr{Void},),pointer_from_objref(return_set))
+    pointer = ccall(gap_NewJuliaObj,Ptr{Cvoid},(Ptr{Cvoid},),pointer_from_objref(return_set))
     return GAP.GapObj(pointer)
 end
 
-function bahn_with_any( self::Ptr{Void}, element::Ptr{Void}, generators::Ptr{Void},
-                                action::Ptr{Void} )
+function bahn_with_any( self::Ptr{Cvoid}, element::Ptr{Cvoid}, generators::Ptr{Cvoid},
+                                action::Ptr{Cvoid} )
     work_set = [reinterpret(Int,element)]
     return_set = [reinterpret(Int,element)]
     generator_length = gap_LengthPlist(generators)
@@ -49,7 +49,7 @@ function bahn_with_any( self::Ptr{Void}, element::Ptr{Void}, generators::Ptr{Voi
         for current_generator_number = 1:generator_length
             current_generator = gap_ListElement(generators,current_generator_number)
             current_result = reinterpret(Int,gap_CallFunc2Args(action,
-                                        reinterpret(Ptr{Void},current_element),current_generator))::Int
+                                        reinterpret(Ptr{Cvoid},current_element),current_generator))::Int
             if ! any( eq(current_result), return_set )
                 push!( work_set, current_result )
                 push!( return_set, current_result )

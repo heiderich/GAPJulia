@@ -106,14 +106,15 @@ InstallOtherMethod( \[\],
 
 
 BindJuliaFunc( "string", "Base" );
+BindJuliaFunc( "repr", "Base" );
 
-BindJuliaFunc( "include", "Base" );
+# BindJuliaFunc( "include", "Base" );
 
 BindGlobal( "JuliaKnownFiles", [] );
 
 BindGlobal( "JuliaIncludeFile", function( filename )
     if not filename in JuliaKnownFiles then
-      Julia.Base.include( filename );
+      JuliaEvalString( Concatenation( "Base.include( @__MODULE__,\"", filename, "\")" ) );
       AddSet( JuliaKnownFiles, filename );
     fi;
 end );
@@ -138,7 +139,7 @@ InstallMethod( String,
 
   function( julia_obj )
 
-    return ConvertedFromJulia( Julia.Base.string( julia_obj ) );
+    return ConvertedFromJulia( Julia.Base.repr( julia_obj ) );
 
 end );
 

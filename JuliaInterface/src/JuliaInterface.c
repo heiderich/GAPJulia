@@ -534,10 +534,15 @@ Obj __JuliaSetGAPFuncAsJuliaObjFunc( Obj self, Obj func, Obj name, Obj number_ar
     JULIAINTERFACE_EXCEPTION_HANDLER
     jl_sym_t* function_name = jl_symbol( CSTR_STRING( name ) );
     JULIAINTERFACE_EXCEPTION_HANDLER
-    jl_set_global( module_t, function_name, gap_func_obj );
+    module_value = jl_eval_string( "GAPFuncs" );
+    if(!jl_is_module(module_value))
+      ErrorMayQuit("GAP module not yet defined",0,0);
+    module_t = (jl_module_t*)module_value;
+    jl_set_const( module_t, function_name, gap_func_obj );
     JULIAINTERFACE_EXCEPTION_HANDLER
     return NULL;
 }
+
 
 Obj JuliaSetAsJuliaPointer( Obj self, Obj obj )
 {
